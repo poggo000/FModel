@@ -6,7 +6,7 @@ using SkiaSharp;
 
 namespace PakReader.Parsers.Class
 {
-    public sealed class UTexture2D : UObject
+    public sealed class UTexture2D : UTexture
     {
         public FTexturePlatformData[] PlatformDatas { get; }
 
