@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using PakReader.Parsers.Class;
+using PakReader.Parsers.Class.Materials;
 using PakReader.Parsers.Objects;
 
 namespace PakReader.Parsers
@@ -48,27 +49,38 @@ namespace PakReader.Parsers
                         throw new FileLoadException("Can't get class name"); // Shouldn't reach this unless the laws of math have bent to MagmaReef's will
 
                     var pos = Position = Export.SerialOffset - PackageFileSummary.TotalHeaderSize;
-                    DataExports[i] = ExportType.String switch
+                    Export.ExportObject = new Lazy<IUExport>(() =>
                     {
-                        "Texture2D" => new UTexture2D(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
-                        "VirtualTexture2D" => new UTexture2D(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
-                        "CurveTable" => new UCurveTable(this),
-                        "DataTable" => new UDataTable(this),
-                        "FontFace" => new UFontFace(this, ubulk),
-                        "SoundWave" => new USoundWave(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
-                        "StringTable" => new UStringTable(this),
-                        _ => new UObject(this),
-                    };
-
+                        Position = pos;
+                        IUExport exportObject = ExportType.String switch
+                        {
+                            "Texture2D" => new UTexture2D(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
+                            "VirtualTexture2D" => new UTexture2D(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
+                            "MaterialInstanceConstant" => new UMaterialInstanceConstant(this),
+                            "Material" => new UMaterial(this, pos + Export.SerialSize),
+                            "CurveTable" => new UCurveTable(this),
+                            "DataTable" => new UDataTable(this),
+                            "FontFace" => new UFontFace(this, ubulk),
+                            "SoundWave" => new USoundWave(this, ubulk, ExportMap.Sum(e => e.SerialSize) + PackageFileSummary.TotalHeaderSize),
+                            "StringTable" => new UStringTable(this),
+                            _ => new UObject(this),
+                        };
+                        exportObject.Export = Export;
 #if DEBUG
-                    if (pos + Export.SerialSize != Position)
-                    {
-                        System.Diagnostics.Debug.WriteLine($"[ExportType={ExportType.String}] Didn't read {Export.ObjectName} correctly (at {Position}, should be {pos + Export.SerialSize}, {pos + Export.SerialSize - Position} behind)");
-                    }
+                        if (pos + Export.SerialSize != Position)
+                        {
+                            System.Diagnostics.Debug.WriteLine($"[ExportType={ExportType.String}] Didn't read {Export.ObjectName} correctly (at {Position}, should be {pos + Export.SerialSize}, {pos + Export.SerialSize - Position} behind)");
+                        }
 #endif
+                        return exportObject;
+                    });
                 }
             }
-            return;
+
+            for (int i = 0; i < ExportMap.Length; i++)
+            {
+                DataExports[i] = ExportMap[i].ExportObject.Value;
+            }
         }
 
         FNameEntrySerialized[] SerializeNameMap()

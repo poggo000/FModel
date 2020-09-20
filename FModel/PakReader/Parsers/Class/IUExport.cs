@@ -1,5 +1,6 @@
 ﻿using PakReader.Parsers.PropertyTagData;
 using System.Collections.Generic;
+using PakReader.Parsers.Objects;
 
 namespace PakReader.Parsers.Class
 {
@@ -9,7 +10,7 @@ namespace PakReader.Parsers.Class
     /// </summary>
     public interface IUExport : IReadOnlyDictionary<string, object>
     {
-        
+        public FObjectExport Export { get; set; }
     }
 
     public static class IUExportExtension

@@ -6,6 +6,7 @@ namespace PakReader.Parsers.Class
 {
     public sealed class UCurveTable : IUExport
     {
+        public FObjectExport Export { get; set; }
         public ECurveTableMode CurveTableMode { get; }
         readonly Dictionary<string, object> RowMap;
 

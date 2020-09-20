@@ -2,12 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using PakReader.Parsers.Objects;
 
 namespace PakReader.Parsers.Class
 {
     public sealed class UFontFace : IUExport
     {
         /** Font data v3. This points to a font face asset. */
+        public FObjectExport Export { get; set; }
         public UObject FontFaceAsset { get; }
 
         internal UFontFace(PackageReader reader, Stream ufont)

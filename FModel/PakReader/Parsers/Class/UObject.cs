@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using PakReader.Parsers.Objects;
 using PakReader.Parsers.PropertyTagData;
 
@@ -9,6 +10,7 @@ namespace PakReader.Parsers.Class
 {
     public class UObject : IUExport, IUStruct
     {
+        public FObjectExport Export { get; set; }
         readonly Dictionary<string, object> Dict;
 
         // https://github.com/EpicGames/UnrealEngine/blob/bf95c2cbc703123e08ab54e3ceccdd47e48d224a/Engine/Source/Runtime/CoreUObject/Private/UObject/Class.cpp#L930
@@ -73,7 +75,18 @@ namespace PakReader.Parsers.Class
             value = null;
             return false;
         }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T GetOrNull<T>(string key)
+        {
+            if (TryGetValue(key, out object value) && value is T cast)
+                return cast;
+            return default;
+        } 
         public bool TryGetValue(string key, out object value) => Dict.TryGetValue(key, out value);
+
+        private static object GetPropertyValue(object prop) => 
+            prop.GetType().GetMethod("get_Value")?.Invoke(prop, Array.Empty<object>());
 
         public T Deserialize<T>()
         {
@@ -81,10 +94,11 @@ namespace PakReader.Parsers.Class
             var map = ReflectionHelper.GetActionMap<T>();
             foreach (var kv in Dict)
             {
-                (var baseType, var typeGetter) = ReflectionHelper.GetPropertyInfo(kv.Value.GetType());
+                var prop = GetPropertyValue(kv.Value);
+                (var baseType, var typeGetter) = ReflectionHelper.GetPropertyInfo(prop.GetType());
                 if (map.TryGetValue((kv.Key.ToLowerInvariant(), baseType), out Action<object, object> setter))
                 {
-                    setter(ret, typeGetter(kv.Value));
+                    setter(ret, typeGetter(prop));
                 }
             }
             return ret;

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using PakReader.Parsers.Objects;
 
 namespace PakReader.Parsers.Class
 {
     public sealed class UDataTable : IUExport
     {
+        public FObjectExport Export { get; set; }
         /** Map of name of row to row data structure. */
         readonly Dictionary<string, object> RowMap;
 

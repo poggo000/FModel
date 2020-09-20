@@ -62,5 +62,9 @@ namespace PakReader.Parsers.Objects
         public int AsImport => -Index - 1;
         [JsonIgnore]
         public int AsExport => Index - 1;
+
+        [JsonIgnore]
+        public string Name => (Resource as FObjectImport)?.ObjectName.String ??
+                              (Resource as FObjectExport)?.ObjectName.String;
     }
 }

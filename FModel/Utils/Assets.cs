@@ -284,7 +284,8 @@ namespace FModel.Utils
 
             return p;
         }
-        private static bool TryGetPakPackage(FPakEntry entry, string mount, out PakPackage package)
+
+        internal static bool TryGetPakPackage(FPakEntry entry, string mount, out PakPackage package)
         {
             DebugHelper.WriteLine("{0} {1} {2} {3}", "[FModel]", "[Assets]", "[Package]", $"Searching for '{mount + entry.Name}'s package");
             if (_CachedFiles.TryGetValue(entry, out var dict))

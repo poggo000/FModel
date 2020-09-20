@@ -4,6 +4,9 @@ using PakReader.Parsers.Class;
 using PakReader.Parsers.PropertyTagData;
 using SkiaSharp;
 using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using PakReader.Parsers.Objects;
 
 namespace FModel.Creator
 {
@@ -30,6 +33,71 @@ namespace FModel.Creator
                     return Assets.GetPakPackage(entry, mount);
                 }
             return default;
+        }
+        
+        public static bool TryGetPropertyPakPackage(string value, out PakPackage package)
+        {
+            string path = Strings.FixPath(value);
+            foreach (var fileReader in Globals.CachedPakFiles.Values)
+                if (fileReader.TryGetValue(path, out var entry))
+                {
+                    // kinda sad to use Globals.CachedPakFileMountPoint when the mount point is already in the path ¯\_(ツ)_/¯
+                    string mount = path.Substring(0, path.Length - entry.Name.Substring(0, entry.Name.LastIndexOf(".")).Length);
+                    return Assets.TryGetPakPackage(entry, mount, out package);
+                }
+            package = default;
+            return false;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T As<T>(this IUStruct @struct) where T : IUStruct
+        {
+            if (@struct is T cast) return cast;
+            else if (@struct is UObject @object) return @object.Deserialize<T>();
+            return default;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T LoadObject<T>(this FPackageIndex index) where T : IUExport
+        {
+            var generic = index.LoadObject();
+            if (generic is T export) return export;
+            return default;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static IUExport LoadObject(this FPackageIndex index)
+        {
+            index.TryLoadObject(out var export);
+            return export;
+        }
+
+        public static bool TryLoadObject(this FPackageIndex index, out IUExport exportObject)
+        {
+            var resource = index.Resource;
+            exportObject = default;
+            return resource switch
+            {
+                FObjectImport import => import.TryLoadImport(out exportObject),
+                FObjectExport export => (exportObject = export.ExportObject.Value) != default,
+                _ => false
+            };
+        }
+
+        public static bool TryLoadImport(this FObjectImport import, out IUExport exportObject)
+        {
+            //The needed export is located in another asset, try to load it
+            exportObject = default;
+            var outerImport = import?.OuterIndex.Resource as FObjectImport;
+            if (outerImport == null) return false;
+            if (TryGetPropertyPakPackage(outerImport.ObjectName.String, out var package))
+            { 
+                exportObject = package.ExportMap.FirstOrDefault(export =>
+                    export.ClassIndex.Name == import.ClassName.String &&
+                    export.ObjectName.String == import.ObjectName.String)?.ExportObject.Value;
+                return exportObject != default;
+            }
+            return false;
         }
 
         public static ArraySegment<byte>[] GetPropertyArraySegmentByte(string value)

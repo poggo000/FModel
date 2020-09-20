@@ -6,6 +6,7 @@ namespace PakReader.Parsers.Class
 {
     public sealed class UStringTable : IUExport
     {
+        public FObjectExport Export { get; set; }
         readonly Dictionary<string, object> Map;
 
         internal UStringTable(PackageReader reader)

@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using Newtonsoft.Json;
+using PakReader.Parsers.Class;
 
 namespace PakReader.Parsers.Objects
 {
@@ -42,6 +44,8 @@ namespace PakReader.Parsers.Objects
         public int SerializationBeforeCreateDependencies { get; }
         [JsonIgnore]
         public int CreateBeforeCreateDependencies { get; }
+        
+        public Lazy<IUExport> ExportObject { get; set; }
 
         internal FObjectExport(PackageReader reader)
         {

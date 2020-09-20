@@ -9,9 +9,11 @@ namespace PakReader.Parsers.Class.Materials
         {
         }
 
+        public bool IsTextureCube { get; } = false;
+
         public abstract void GetParams(CMaterialParams parameters);
 
-        public void AppendReferencedTextures(List<UUnrealMaterial> outTextures, bool onlyRendered)
+        public virtual void AppendReferencedTextures(List<UUnrealMaterial> outTextures, bool onlyRendered)
         {
             var parameters = new CMaterialParams();
             GetParams(parameters);
