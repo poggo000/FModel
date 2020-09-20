@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.29806.167
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FModel", "FModel\FModel.csproj", "{A42F8737-D056-4FA5-BEB5-AA96E1639F8A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FModel-Tests", "FModel-Tests\FModel-Tests.csproj", "{7A359DCE-56E2-4184-9A0F-D44B8A64E0A5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -17,10 +15,6 @@ Global
 		{A42F8737-D056-4FA5-BEB5-AA96E1639F8A}.Debug|x64.Build.0 = Debug|x64
 		{A42F8737-D056-4FA5-BEB5-AA96E1639F8A}.Release|x64.ActiveCfg = Release|x64
 		{A42F8737-D056-4FA5-BEB5-AA96E1639F8A}.Release|x64.Build.0 = Release|x64
-		{7A359DCE-56E2-4184-9A0F-D44B8A64E0A5}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{7A359DCE-56E2-4184-9A0F-D44B8A64E0A5}.Debug|x64.Build.0 = Debug|Any CPU
-		{7A359DCE-56E2-4184-9A0F-D44B8A64E0A5}.Release|x64.ActiveCfg = Release|Any CPU
-		{7A359DCE-56E2-4184-9A0F-D44B8A64E0A5}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

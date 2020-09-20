@@ -1,10 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using PakReader.Parsers.Objects;
 
 namespace PakReader.Parsers.Class
 {
     public sealed class UAkAudioEvent : IUExport
     {
+        public FObjectExport Export { get; set; }
         readonly Dictionary<string, object> Map;
 
         internal UAkAudioEvent(PackageReader reader)
